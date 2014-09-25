@@ -1,0 +1,101 @@
+extends layout
+
+block content
+  div(class="container")
+    div(class="header")
+      ul(class="nav nav-pills pull-right")
+        li(class="active")
+          a(href="#") Home
+      h3(class="text-muted") Cloud Computing 890
+    div(id="signupSuccess", class="alert alert-success", style="display:none")
+      p(id="signupSuccessText") Thanks for register!
+    div(id="signupDuplicate", class="alert alert-success", style="display:none")
+      p(id="signupDuplicateText") Employee duplicate!
+    div(id="signupError", class="alert alert-info", style="display:none")
+      p(id="signupErrorText") Sign up error!
+    div(id="table", class="alert alert-info", style="display:none")
+      p(id="tableinfo") TEST
+    div(class="jumbotron")
+      h1 AWS Example
+      p(class="lead") Click button to access AWS database
+      p
+        a(class="btn btn-lg btn-success", data-toggle="modal", href="#signupModal") Write
+      P
+        a(class="btn btn-lg btn-success", data-toggle="modal", href="#readModal") Read
+    
+    div(class="footer")
+      p Modified by YEQING YAN
+      
+    // Modal
+    div(class="modal fade", id="signupModal", tabindex="-1", role="dialog", aria-labelledby="signupModal", aria-hidden="true")
+      div(class="modal-dialog")
+        div(class="modal-content")
+          div(class="modal-header")
+            button(type="button", class="close", data-dismiss="modal", aria-hidden="true") &times;
+            h4(class="modal-title") Input employee details
+          div(class="modal-body")
+            form(id="signupForm", role="form")
+              input(type="hidden", id="theme", name="theme", value="flatly")
+              div(class="form-group")
+                label(for="id") Employee ID
+                input(type="number", class="form-control", id="id", name="id", placeholder="EmployeeID")
+              div(class="form-group")
+                label(for="email") Email 
+                input(type="email", class="form-control", id="email", name="email", placeholder="Employee email address")
+              div(class="form-group")
+                label(for="name") Name
+                input(type="text", class="form-control", id="name", name="name", placeholder="Employee Full Name")
+              div(class="form-group")
+                label(for="address") Address
+                input(type="text", class="form-control", id="address", name="address", placeholder="Employee Address")
+              div(class="form-group")
+                label(for="salary") Salary
+                input(type="number", class="form-control", id="salary", name="salary", placeholder="Employee Salary")
+
+          div(class="modal-footer")
+            button(id="signup", type="button", class="btn btn-primary") Register!
+      
+    div(class="modal fade", id="readModal", tabindex="-1", role="dialog", aria-labelledby="readModal", aria-hidden="true")
+      div(class="modal-dialog")
+        div(class="modal-content")
+          div(class="modal-footer")
+            p#datatable Click the button below!
+            button(id="read", type="button", class="btn btn-primary") Database Read
+
+
+  script(src="../static/jquery/jquery.js")
+  script(src="../static/bootstrap/js/bootstrap.min.js")
+  script.
+    $(document).ready(function() {
+      $("#signup").click(function() {
+        console.log("THIS IS A TEST");
+        $.post( "/signup", $("#signupForm").serialize(),
+                function(data) {
+                  $("#signupSuccess").show();
+                }
+              )
+              .error(function(xhr) {
+                switch(xhr.status) {
+                  case 409:
+                    $("#signupDuplicate").show();
+                    break;
+                  default:
+                    $("#signupError").show();
+                }
+              })
+              .always(function() {
+                $("#signupModal").modal('hide');
+              });
+      })
+       
+    })
+  script.
+    $(document).ready(function() {
+      $("#read").click(function() {
+        //document.getElementById("datatable").innerHTML = "INSERT TEST";
+        $.post( "/readdata", function(data) {
+          console.log(data);
+          document.getElementById("datatable").innerHTML = data;
+        });
+      })
+    })
